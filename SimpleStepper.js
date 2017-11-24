@@ -102,8 +102,9 @@ export default class SimpleStepper extends Component {
       nextProps.minimumValue !== minimumValue ||
       nextProps.maximumValue !== maximumValue
     ) {
-      const isValidNextMin = nextProps.minimumValue < maximumValue;
-      const isValidNextMax = nextProps.maximumValue > minimumValue;
+      const isValidNextMin = nextProps.minimumValue <= maximumValue;      
+      // previous state min =1 max=1 next step min =1 max=2; nextProps.minimumValue < maximumValue; will conclude it as invalid update.
+      const isValidNextMax = nextProps.maximumValue => minimumValue;
       if (isValidNextMin && isValidNextMax) {
         this.validateValue(
           this.state.value,
@@ -206,10 +207,12 @@ export default class SimpleStepper extends Component {
       incrementOpacity: hasReachedMax || disabled
         ? this.props.disabledOpacity
         : 1,
-    });
-    if (this.props.valueChanged) {
+    },function(){
+      if (this.props.valueChanged) {
       this.props.valueChanged(value);
     }
+      //If someone tries to update the state in this callback function,value passed to this function from componentWillReceiveProps may not be the correct as setState is async. 
+    });    
   };
   tintStyle(status) {
     if (status) {
